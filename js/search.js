@@ -1,6 +1,8 @@
 var page = 1;
 const pageSize = 16;
 var needGet = 1;
+var from = "n1Q8PYm1A3n4ejR1HXejeLFJakKTjb3Sutz";
+var dappAddress = "n1mr8YeUsFAhCn7jf484422Qq7WMsCmrtER";
 
 var createItem = function(text) {
   var item =
@@ -22,29 +24,49 @@ var createItem = function(text) {
 
 var get = function(page, pageSize) {
   console.log("hahaha");
-  var NebPay = require("nebpay"); //https://github.com/nebulasio/nebPay
-  var nebPay = new NebPay();
-  var dappAddress = "n1mr8YeUsFAhCn7jf484422Qq7WMsCmrtER";
-  var to = dappAddress;
+  var nebulas = require("nebulas"),//var NebPay = require("nebpay"); //https://github.com/nebulasio/nebPay
+  neb =new nebulas.Neb();//var nebPay = new NebPay();
+   neb.setRequest(new nebulas.HttpRequest("https://mainnet.nebulas.io"));
+  var value = "0";
+  var nonce = "0"
+  var gas_price = "1000000"
+  var gas_limit = "2000000"
   var value = "0";
   var callFunction = "getByPage";
   var callArgs = [];
   showLoading(3);
   callArgs.push(page);
   callArgs.push(pageSize);
+   var contract = {
+            "function": callFunction,
+            "args": JSON.stringify(callArgs)
+        }
+   neb.api.call(from,dappAddress,value,nonce,gas_price,gas_limit,contract).then(function (resp) {
+            dataSearch(resp)
+        }).catch(function (err) {
+            //cbSearch(err)
+            console.log("error:" + err.message)
+        })
+
   // nebPay.simulateCall(to, value, "getTotalPages", "[8]", {
   //   listener: pageFunction
   // });
-  nebPay.simulateCall(to, value, callFunction, JSON.stringify(callArgs), {
+  //nebPay.simulateCall(to, value, callFunction, JSON.stringify(callArgs), {
     //使用nebpay的simulateCall接口去执行get查询, 模拟执行.不发送交易,不上链
-    listener: dataSearch //指定回调函数
-  });
+  //  listener: dataSearch //指定回调函数
+ // });
 };
 
 var search = function() {
-  var NebPay = require("nebpay"); //https://github.com/nebulasio/nebPay
-  var nebPay = new NebPay();
-  var dappAddress = "n1mr8YeUsFAhCn7jf484422Qq7WMsCmrtER";
+ // var NebPay = require("nebpay"); //https://github.com/nebulasio/nebPay
+ // var nebPay = new NebPay();
+ var nebulas = require("nebulas"),
+  neb =new nebulas.Neb();
+  neb.setRequest(new nebulas.HttpRequest("https://mainnet.nebulas.io"));
+  var value = "0";
+  var nonce = "0"
+  var gas_price = "1000000"
+  var gas_limit = "2000000"
   var to = dappAddress;
   var value = "0";
   var callFunction = "getByKeyword";
@@ -57,10 +79,20 @@ var search = function() {
   showLoading(2);
   callArgs.push($("#search_content").val());
   callArgs.push(16);
-  nebPay.simulateCall(to, value, callFunction, JSON.stringify(callArgs), {
+   var contract = {
+            "function": callFunction,
+            "args": JSON.stringify(callArgs)
+        }
+   neb.api.call(from,dappAddress,value,nonce,gas_price,gas_limit,contract).then(function (resp) {
+            dataSingleSearch(resp)
+        }).catch(function (err) {
+            //cbSearch(err)
+            console.log("error:" + err.message)
+        })
+ // nebPay.simulateCall(to, value, callFunction, JSON.stringify(callArgs), {
     //使用nebpay的simulateCall接口去执行get查询, 模拟执行.不发送交易,不上链
-    listener: dataSingleSearch //指定回调函数
-  });
+  //  listener: dataSingleSearch //指定回调函数
+ // });
 };
 
 var dataSearch = function(resp) {
