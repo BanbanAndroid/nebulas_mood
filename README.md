@@ -1,2 +1,2 @@
-# nebulas_mood
-Nebulas project
+# xingqing_mood
+XING_QING_MOOD PROJECT
